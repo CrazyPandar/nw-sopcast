@@ -2,7 +2,16 @@
 <html>
   <head>
     <title>nw-sopcast</title>
-    <script src='index.js'>
+    <script src='nw-spsc.js'></script>
+    <script>
+    console.log("1111\n");
+    var spsc = new NwSpsc("sp-sc-auth", "mpv");
+    
+    if (!spsc) {
+		console.log("\n");
+	}
+    
+    spsc.play('sop://211.152.36.38:3912/8893');
     
     </script>
   </head>
