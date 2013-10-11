@@ -14,23 +14,28 @@ NwSpsc.prototype.on = function(evt, func){
 	}
 }
 
+function dodoPlay(nwspsc)
+{
+	nwspsc.doPlay();
+}
+
 function testSocket(nwspsc)
 {
 	var net = require('net');
 	
 	var testClient = net.connect({port: 8908}, function() { //'connect' listener
-		console.log('client connected');
+		console.log('test connected');
 		testClient.end();
-		nwspsc.doPlay();
+		setTimeout(dodoPlay, 5000, nwspsc);
 	});
 	
 	testClient.on('error', function(e){
-		console.log('connect error\n');
+		console.log('connect error');
 		testClient.destroy();
-		setTimeout(testSocket, 1000, nwspsc);
+		setTimeout(testSocket, 5000, nwspsc);
 	});
 	testClient.on('end', function(e){
-		console.log('connect end\n');
+		console.log('test disconnected');
 	});
 }
 
@@ -58,11 +63,17 @@ NwSpsc.prototype.play = function(spscAddr) {
 	});
 	
 	me.spsc.stdout.on('data', function (data) {
-		console.log('sp-sc-auth stdout: ' + data);
+		//console.log('sp-sc-auth stdout: ' + data);
 	});
+	
+	me.spsc.stderr.on('data', function (data) {
+		//console.log('sp-sc-auth stderr: ' + data);
+	});
+	
 	//todo: start connect to the asf server, when socket available start player
 	
-	setTimeout(testSocket, 1000, me);
+	//setTimeout(dodoPlay, 20000, me);
+	setTimeout(testSocket, 5000, me);
 }
 
 NwSpsc.prototype.doPlay = function() {
@@ -75,7 +86,7 @@ NwSpsc.prototype.doPlay = function() {
 		return -1;
 	}
 	
-	me.player = cp.spawn(me.playerExec, ['http://localhost:8908/tv.asf']);
+	me.player = cp.spawn(me.playerExec, ['http://127.0.0.1:8908/tv.asf']);
 	if (!me.player) {
 		console.log("\n");
 		return -1;
@@ -88,21 +99,22 @@ NwSpsc.prototype.doPlay = function() {
 	});
 	
 	me.player.stdout.on('data', function (data) {
-		console.log('sp-sc-auth stdout: ' + data);
+		//console.log('player stdout: ' + data);
 	});
 	
+	me.player.stderr.on('data', function (data) {
+		//console.log('player stderr: ' + data);
+	});
 }
 
 
 NwSpsc.prototype.stop = function(){
 	var me = this;
 	
-	console.log("");
 	if (me.player) {
 		me.player.kill('SIGINT');
 	}
 	if (me.spsc) {
-		console.log("");
 		me.spsc.kill('SIGKILL');
 	}
 }

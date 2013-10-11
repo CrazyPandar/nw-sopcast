@@ -1,20 +1,45 @@
 <!DOCTYPE html>
 <html>
+	
   <head>
     <title>nw-sopcast</title>
+    <script src='js/jquery-1.10.2.min.js'></script>
     <script src='nw-spsc.js'></script>
     <script>
-    console.log("1111\n");
-    var spsc = new NwSpsc("sp-sc-auth", "mpv");
-    
-    if (!spsc) {
-		console.log("\n");
+	function PlaySopUrl(sopUrl, player)
+	{
+		var spsc = new NwSpsc("sp-sc-auth", player);
+		
+		if (!spsc) {
+			console.log("\n");
+		}
+		
+		spsc.play(sopUrl);
 	}
-    
-    spsc.play('sop://211.152.36.38:3912/8893');
-    
+	
+	$(document).ready(function(){
+		console.log("document ready");
+		$('#PlayBtn').on("click", function(){
+			console.log("PlayBtn clicked");
+			var sopUrl = $('#SopUrlInput').val();
+			var player = $('#PlayerInput').val();
+			console.log("SopUrl: " + sopUrl);
+			console.log("player: " + player);
+			PlaySopUrl(sopUrl, player);
+		});
+	});
+	
     </script>
+    
   </head>
+  
   <body>
+	  SopCast URL:
+	  <input id='SopUrlInput' type='text'/>
+	  <br/>
+	  Player:
+	  <input id='PlayerInput' type='text' value="vlc"/>
+	  <br/>
+	  <button id='PlayBtn'>Play</button>
   </body>
 </html>
